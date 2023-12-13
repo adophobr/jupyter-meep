@@ -21,13 +21,13 @@ def get_layer_mapping(layerset):
 def device_to_meep(device, mapping):
     # converts PHIDL to MEEP. You must give a layer mapping that can be derived from get_layer_mapping
     # TODO: partial etches. Currently this is only 2D
-    geometry = list()
+    geometry = []
     for poly_grp in device.polygons:
         layer = poly_grp.layers[0]
         try:
             material = mapping[layer]
         except KeyError:
-            print('layer {} not in meep mapping'.format(layer))
+            print(f'layer {layer} not in meep mapping')
             continue
         if material is cell_material:
             cell = mp.Vector3(poly_grp.xsize, poly_grp.ysize)
@@ -35,9 +35,7 @@ def device_to_meep(device, mapping):
         elif material is port_source:
             continue
         for poly in poly_grp.polygons:
-            vertex_list = list()
-            for vertex in poly:
-                vertex_list.append(mp.Vector3(vertex[0], vertex[1]))
+            vertex_list = [mp.Vector3(vertex[0], vertex[1]) for vertex in poly]
             geometry.append(mp.Prism(vertex_list, height=0, material=material))
     return cell, geometry
 
